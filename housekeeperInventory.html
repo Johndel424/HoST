@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HouseKeeper - Inventory</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+        <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+        <!-- Add Firebase products that you want to use -->
+        <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+        <link rel="stylesheet" href="css/receptionist.css">
+        <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="icon" type="image/png" href="img/logoo.png">
+        <!-- Boxicons -->
+        <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+        <!-- font awesome library -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <script src="js/housekeeperInventory.js" defer></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+		<!-- SweetAlert CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+		<!-- SweetAlert JS -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+    </head>
+<body>
+
+
+	<!-- SIDEBAR -->
+	<section id="sidebar">
+		<a href="#" class="brand">
+			<img src="img/logoo.png" alt="" style="width: 40px; height: 40px; margin-inline-end: 10px; margin-inline-start: 10px;">
+			<span class="text">HoST</span>
+		</a>
+		<ul class="side-menu top">
+			<li >
+				<a href="housekeeper.html">
+                    <i class='bx bx-hotel' style="font-size: 25px;"></i>
+					<span class="text">Rooms</span>
+				</a>
+			</li>
+			<li class="active">
+				<a href="housekeeperInventory.html">
+                    <i class='bx bx-box' style="font-size: 25px;"></i>
+					<span class="text">Inventory</span>
+				</a>
+			</li>
+		</ul>
+		<ul class="side-menu">
+			<li>
+				<a onclick="checkChangesBeforeLogout()" class="logout">
+                    <i class='bx bx-exit' style="font-size: 25px;"></i>
+					<span class="text">Logout</span>
+				</a>
+			</li>
+			
+			<script>
+				function checkChangesBeforeLogout() {
+					Swal.fire({
+						title: "Do you want to logout?",
+						showDenyButton: true,
+						showCancelButton: true,
+						confirmButtonText: "Yes",
+						denyButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+								logoutUser();
+						} else if (result.isDenied) {
+							// If changes are not saved, inform the user and do not logout
+							Swal.fire("Logout are not successful", "", "info");
+						}
+					});
+				}
+			</script>
+			
+		</ul>
+	</section>
+	<!-- SIDEBAR -->
+
+
+	<!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu' style="font-size: 20px;"></i>
+            <a href="javascript:void(0);" id="toggleButton">
+				<i class='bx bx-user-plus' style="font-size: 25px;"></i>
+			</a>
+			<form id="searchForm">
+				
+			</form>
+			<a href="#" class="notification">
+                <p id="usernameParagraph" style="font-family: Arial; font-size: 15px;">Name here</p>
+            </a>
+			<a href="#" class="profile">
+				<img src="img/people.png" id="userProfileImage">
+			</a>
+		</nav>
+		<!-- NAVBAR -->
+ 
+		<!-- MAIN -->
+		<main>
+			<div class="container">
+				<div class="containerCreateAccount"id="accountContainer" style="display: none; ">
+					<form id="createAccountForm" style=" max-width: 400px; margin: auto;">
+						<h1 style="text-align: center;">Add Stock</h1>
+						<div class="form-group" style="margin-bottom: 15px;">
+                            <label for="itemType">Item:</label>
+                            <select id="itemType" required 
+                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+                                    background-color: #f0f0f0;">
+                                <option value="soap">Soap</option>
+                                <option value="shampoo">Shampoo</option>
+                                <option value="conditioner">Conditioner</option>
+                                <option value="body_lotion">Body Lotion</option>
+                                <option value="towel">Towel</option>
+                                <option value="bathrobe">Bathrobe</option>
+                                <option value="toothbrush">Toothbrush</option>
+                                <option value="toothpaste">Toothpaste</option>
+                                <option value="razor">Razor</option>
+                                <option value="shaving_cream">Shaving Cream</option>
+                                <option value="hairdryer">Hair Dryer</option>
+                                <option value="cleaning_wipe">Cleaning Wipe</option>
+                                <option value="disinfectant_spray">Disinfectant Spray</option>
+                                <option value="paper_towels">Paper Towels</option>
+                                <option value="trash_bag">Trash Bag</option>
+                                <option value="sponges">Sponges</option>
+                                <option value="broom">Broom</option>
+                                <option value="dustpan">Dustpan</option>
+                                <option value="mop">Mop</option>
+                                <option value="vacuum">Vacuum Cleaner</option>
+                            </select>
+                        </div>                        
+						<div class="form-group" style="margin-bottom: 15px;">
+							<label for="quantity" >Quantity:</label>
+							<input type="number" id="quantity" required 
+								style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+								background-color: #f0f0f0;">
+						</div>
+						
+						<div style="display: flex; justify-content: center; margin-top: 20px;">
+							<button type="submit" style="padding: 10px 30px; border-radius: 5px; background-color: #ef53a3; color: white; border: none; cursor: pointer;">
+								Add Stock
+							</button>
+						</div>
+						
+					</form>
+			</div>            
+        
+        </div>
+				
+        
+			
+		<div id="itemsContainer">
+				
+		</div>
+        <h1 style="text-align: center; font-family: Arial, sans-serif; color: #ef53a3;">Inventory Items</h1>
+        <div style="overflow-x: auto;">
+            <table id="inventoryTable" style="width: 100%; border-collapse: collapse; margin: 20px 0; font-family: Arial, sans-serif;">
+                <thead>
+                    <tr style="background-color: #ef53a3; color: white;">
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Item Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Quantity</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody" style="background-color: #f9f9f9;">
+                    <!-- Inventory items will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+        
+
+		</main>
+		<!-- MAIN -->
+	</section>
+	<!-- CONTENT -->
+	<script>
+		//make visible the room creation
+		document.getElementById('toggleButton').addEventListener('click', function() {
+		const accountContainer = document.getElementById('accountContainer');
+		if (accountContainer.style.display === 'none' || accountContainer.style.display === '') {
+			accountContainer.style.display = 'block'; // Ipakita ang container
+		} else {
+			accountContainer.style.display = 'none'; // Itago ang container
+		}
+		});
+
+	</script>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
+<!-- storage to -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+
+</body>
+</html>

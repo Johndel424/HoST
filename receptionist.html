@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Receptionist - Home</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+        <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+        <!-- Add Firebase products that you want to use -->
+        <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+        <link rel="stylesheet" href="css/receptionist.css">
+        <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="icon" type="image/png" href="img/logoo.png">
+        <!-- Boxicons -->
+        <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+        <!-- font awesome library -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <script src="js/receptionist.js" defer></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+		<!-- SweetAlert CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+		<!-- SweetAlert JS -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+    </head>
+<body>
+
+
+	<!-- SIDEBAR -->
+	<section id="sidebar">
+		<a href="#" class="brand">
+			<img src="img/logoo.png" alt="" style="width: 40px; height: 40px; margin-inline-end: 10px; margin-inline-start: 10px;">
+			<span class="text">HoST</span>
+		</a>
+		<ul class="side-menu top">
+			<li class="active">
+				<a href="receptionist.html">
+                    <i class='bx bx-hotel' style="font-size: 25px;"></i>
+					<span class="text">Rooms</span>
+				</a>
+			</li>
+			<li>
+				<a href="receptionistAccount.html">
+                    <i class='bx bx-user' style="font-size: 25px;"></i>
+					<span class="text">Accounts</span>
+				</a>
+			</li>
+			<li>
+				<a href="receptionistInventory.html">
+                    <i class='bx bx-box' style="font-size: 25px;"></i>
+					<span class="text">Inventory</span>
+				</a>
+			</li>
+			<li>
+				<a href="receptionistMessageList.html">
+                    <i class='bx bx-message' style="font-size: 25px;"></i>
+					<span class="text">Message</span>
+				</a>
+			</li>
+			<li>
+                <a href="receptionistPending.html" >
+                    <i class='bx bx-hourglass' style="font-size: 25px;"></i>
+                    <span class="text">Pending</span>
+                </a>
+            </li>
+            <li>
+                <a href="receptionistNotification.html" >
+                    <i class='bx bx-bell' style="font-size: 25px;"></i>
+                    <span class="text">Notification</span>
+                </a>
+            </li>
+		</ul>
+		<ul class="side-menu">
+			<li>
+				<a onclick="checkChangesBeforeLogout()" class="logout">
+                    <i class='bx bx-exit' style="font-size: 25px;"></i>
+					<span class="text">Logout</span>
+				</a>
+			</li>
+			
+			<script>
+				function checkChangesBeforeLogout() {
+					Swal.fire({
+						title: "Do you want to logout?",
+						showDenyButton: true,
+						showCancelButton: true,
+						confirmButtonText: "Yes",
+						denyButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+								logoutUser();
+						} else if (result.isDenied) {
+							// If changes are not saved, inform the user and do not logout
+							Swal.fire("Logout are not successful", "", "info");
+						}
+					});
+				}
+			</script>
+			
+		</ul>
+	</section>
+	<!-- SIDEBAR -->
+
+
+	<!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu' style="font-size: 20px;"></i>
+			<a href="javascript:void(0);" id="toggleButton">
+				<i class='bx bx-user-plus' style="font-size: 25px;"></i>
+			</a>
+			<form id="searchForm">
+				
+			</form>
+			<a href="#" class="notification">
+                <p id="usernameParagraph" style="font-family: Arial; font-size: 15px;">Name here</p>
+            </a>
+			<a href="#" class="profile">
+				<img src="img/people.png" id="userProfileImage">
+			</a>
+		</nav>
+		<!-- NAVBAR -->
+ 
+		<!-- MAIN -->
+		<main>
+			
+			<div class="container">
+				<div class="containerCreateAccount"id="accountContainer" style="display: none; ">
+					<form id="createAccountForm" style=" max-width: 400px; margin: auto;">
+						<h1 style="text-align: center;">Create Room</h1>
+						<div class="form-group">
+							<label for="profileImage" style="display: none;">Profile Image:</label>
+							<input type="file" id="profileImage" accept="image/*" style="display: none;" onchange="displayImage(event)">
+							<img id="profilePreview" src="img/defaultProfile.png" alt="Profile Image" 
+								 style="width: 100px; height: 100px;  cursor: pointer; 
+								 display: block; margin: 0 auto;" onclick="document.getElementById('profileImage').click();">
+						</div>
+						<div class="form-group" style="margin-bottom: 15px;">
+							<label for="room">Room #:</label>
+							<input type="text" id="room" required 
+								style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+								background-color: #f0f0f0;">
+						</div>
+						<div class="form-group" style="margin-bottom: 15px;">
+							<label for="roomType">Room Type:</label>
+							<select id="roomType" required 
+									style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+									background-color: #f0f0f0;">
+								<option value="standard">Standard Room</option>
+								<option value="deluxe">Deluxe Room</option>
+								<option value="suite">Suite</option>
+								<option value="family">Family Room</option>
+								<option value="penthouse">Penthouse Suite</option>
+							</select>
+						</div>
+						<div class="form-group" style="margin-bottom: 15px;">
+							<label for="price" >Price:</label>
+							<input type="number" id="price" required 
+								style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+								background-color: #f0f0f0;">
+						</div>
+						<div class="form-group" style="margin-bottom: 15px;">
+							<label for="description">Description:</label>
+							<input type="text" id="description" required 
+								style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+								background-color: #f0f0f0;">
+						</div>
+						
+						<div style="display: flex; justify-content: center; margin-top: 20px;">
+							<button type="submit" style="padding: 10px 30px; border-radius: 5px; background-color: #ef53a3; color: white; border: none; cursor: pointer;">
+								Create Room
+							</button>
+						</div>
+						
+					</form>
+					<script>
+						function displayImage(event) {
+							const file = event.target.files[0]; // Get the selected file
+							const reader = new FileReader(); // Create a FileReader object
+						
+							// Set the onload function for the FileReader
+							reader.onload = function(e) {
+								const imgElement = document.getElementById('profilePreview');
+								imgElement.src = e.target.result; // Set the preview image source to the selected file
+							};
+						
+							if (file) {
+								reader.readAsDataURL(file); // Read the file as a data URL
+							}
+						}
+					</script>
+			</div>
+			
+			<div style="margin-bottom: 15px;">
+					<select style=" padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+					background-color: #f0f0f0;" id="pageSpinner" onchange="redirectToPage()">
+						<option value="">Available Rooms</option>
+						<option value="receptionistUnavailable.html">Occupied Rooms</option>
+						<option value="receptionistManage.html">Manage Rooms</option>
+					</select>
+			</div>
+			<script>
+				function redirectToPage() {
+					const spinner = document.getElementById("pageSpinner");
+					const selectedValue = spinner.options[spinner.selectedIndex].value;
+					if (selectedValue) {
+						window.location.href = selectedValue;
+					}
+				}
+			</script>		
+			
+			<!-- Modal structure -->
+			<div class="container">
+				<div id="bookingModal" class="modal" style="display: none; margin-top: 30px;">
+					<div class="modal-content" id="createBooking">
+						<span class="close" onclick="closeModal()" style="cursor: pointer; float: right; font-size: 30px;">&times;</span>
+						<h2 style="margin-bottom: 20px;">Book</h2>
+						
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="modalRoomId">Room ID</label>
+							<p style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+							background-color: #f0f0f0;"><span id="modalRoomId"></span></p>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="modalRoomType">Room Type</label>
+							<p style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+							background-color: #f0f0f0;"><span id="modalRoomType"></span></p>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="modalRoomPrice">Room Price (per hour)</label>
+							<p style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+							background-color: #f0f0f0;">₱<span id="modalRoomPrice"></span></p>
+						</div>
+						
+						<p style="display: none;"><strong>Description:</strong> <span id="modalRoomDescription"></span></p>
+						
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="nameInput">Name</label>
+							<input type="text" id="nameInput" required 
+								style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+								background-color: #f0f0f0;">
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="checkinTime">Check-in Time</label>
+							<p style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+							background-color: #f0f0f0;"><span id="checkinTime"></span></p>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="checkoutDateTime">Check-out Time</label>
+							<input style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+								background-color: #f0f0f0;" 
+								type="datetime-local" id="checkoutDateTime" required oninput="calculateTotal()">
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="durationOfStay">Duration of Stay (hours)</label>
+							<p style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+							background-color: #f0f0f0;"><span id="durationOfStay">0</span></p>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="totalPrice">Total Price</label>
+							<p style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; 
+							background-color: #f0f0f0;"><span id="totalPrice">0</span></p>
+						</div>
+						
+						<button onclick="confirmBooking()">Confirm Booking</button>
+					</div>
+				</div>
+				
+				
+			</div>
+				
+           
+			
+		</div>
+		<div id="itemsContainer">
+				
+		</div>
+		</main>
+		<!-- MAIN -->
+	</section>
+	<!-- CONTENT -->
+	<script>
+		//make visible the room creation
+		document.getElementById('toggleButton').addEventListener('click', function() {
+		const accountContainer = document.getElementById('accountContainer');
+		if (accountContainer.style.display === 'none' || accountContainer.style.display === '') {
+			accountContainer.style.display = 'block'; // Ipakita ang container
+		} else {
+			accountContainer.style.display = 'none'; // Itago ang container
+		}
+		});
+
+	</script>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
+<!-- storage to -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+
+</body>
+</html>
