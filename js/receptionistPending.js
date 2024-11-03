@@ -36,7 +36,7 @@ function displayItems(snapshot) {
   snapshot.forEach(function(childSnapshot) {
       var item = childSnapshot.val();
 
-      if (item.cleaner === "none") {
+      if (item.cleaner === "none"&& item.status === "Pending") {
           var itemHtml = `
             <div style="display: flex; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"> <!-- Columns container -->
@@ -224,7 +224,7 @@ const sidebar = document.getElementById('sidebar');
 menuBar.addEventListener('click', function () {
 	sidebar.classList.toggle('hide');
 })
-
+sidebar.classList.toggle('hide');
 
 
 const searchButton = document.querySelector('#content nav form .form-input button');
@@ -243,7 +243,7 @@ searchButton.addEventListener('click', function (e) {
 	}
 })
 
-
+sidebar.classList.toggle('hide');
 
 
 

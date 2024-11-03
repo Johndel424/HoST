@@ -1,4 +1,3 @@
- 
 const firebaseConfig = {
     apiKey: "AIzaSyC3rfHsxIKQYXnsi4m0UXLtRxyyc9KJaMI",
     authDomain: "host-9d733.firebaseapp.com",
@@ -36,7 +35,7 @@ const firebaseConfig = {
     snapshot.forEach(function(childSnapshot) {
         var item = childSnapshot.val();
   
-        if (item.cleaner !== "none" && item.status === "Pending"){
+        if (item.cleaner !== "none" && item.status === "Pending") { 
             var itemHtml = `
               <div style="display: flex; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px;">
                   <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"> <!-- Columns container -->
@@ -66,7 +65,6 @@ const firebaseConfig = {
                           </div>
                       </div>
                   </div>
-  
   
   
               </div>
@@ -146,7 +144,7 @@ const firebaseConfig = {
                 status: 'Pending' // Change status to 'Pending' or any other logic you need
             })
             .then(() => {
-                Swal.fire('Success!', 'The booking has been updated successfully.', 'success');
+                Swal.fire('Success!', 'The housekeeper has been updated successfully.', 'success');
             })
             .catch(error => {
                 console.error('Error updating booking:', error);
@@ -218,7 +216,7 @@ const firebaseConfig = {
   menuBar.addEventListener('click', function () {
       sidebar.classList.toggle('hide');
   })
-  
+  sidebar.classList.toggle('hide');
   
   
   const searchButton = document.querySelector('#content nav form .form-input button');
@@ -237,7 +235,7 @@ const firebaseConfig = {
       }
   })
   
-  
+  sidebar.classList.toggle('hide');
   
   
   
@@ -267,4 +265,4 @@ const firebaseConfig = {
           document.body.classList.remove('dark');
       }
   })
-  
+    

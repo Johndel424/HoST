@@ -142,6 +142,13 @@ button:hover {
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* I-adjust depende sa iyong preference */
 	grid-gap: 20px; /* I-adjust depende sa iyong preference */
 }
+#chatContainer {
+	display: grid;
+	margin-top: 10px;
+	border-radius: 20px;
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* I-adjust depende sa iyong preference */
+	grid-gap: 20px; /* I-adjust depende sa iyong preference */
+}
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 * {

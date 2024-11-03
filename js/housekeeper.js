@@ -287,7 +287,7 @@ const sidebar = document.getElementById('sidebar');
 menuBar.addEventListener('click', function () {
 	sidebar.classList.toggle('hide');
 })
-
+sidebar.classList.toggle('hide');
 
 
 const searchButton = document.querySelector('#content nav form .form-input button');

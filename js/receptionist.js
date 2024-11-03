@@ -24,7 +24,6 @@ firebase.auth().signOut().then(() => {
     alert("Error logging out!");
 });
 }
-//create room
 async function handleSubmit(event) {
   event.preventDefault(); // Prevent default form submission
 
@@ -34,6 +33,12 @@ async function handleSubmit(event) {
   const description = document.getElementById('description').value;
   const fileInput = document.getElementById('profileImage');
   const file = fileInput.files[0]; // Get the file
+
+  // Check if an image file is selected
+  if (!file) {
+    Swal.fire("Error", "You need to input an image.", "error");
+    return; // Exit the function if no file is selected
+  }
 
   // Check if roomId already exists
   const roomRef = database.ref('rooms/' + roomId);
@@ -82,6 +87,7 @@ async function handleSubmit(event) {
     }
   );
 }
+
 
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById('createAccountForm').addEventListener('submit', handleSubmit);
@@ -404,7 +410,7 @@ const sidebar = document.getElementById('sidebar');
 menuBar.addEventListener('click', function () {
 	sidebar.classList.toggle('hide');
 })
-
+sidebar.classList.toggle('hide');
 
 
 const searchButton = document.querySelector('#content nav form .form-input button');

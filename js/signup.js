@@ -36,6 +36,8 @@ function registerUser(email, password, username, profileImg) {
                 usersRef.child(userId).set({
                     uid: userId,
                     email: email,
+                    accountStatus: 'Activate', // Default to 'Activate' if not provided
+                    passwordChange: 'NotYet', // Default to 'NotYet' if not provided
                     username: username,
                     profileImageUrl: profileImageUrl,
                     userType: "user", // Default user type
@@ -88,24 +90,31 @@ function registerUser(email, password, username, profileImg) {
         });
 }
 
-function saveUserData(usersRef, userId, email, username, profileImageUrl, userType) {
-    usersRef.child(userId).set({
+function saveUserData(usersRef, userId, email, accountStatus, passwordChange, username, profileImageUrl, userType = 'user') {
+    // Prepare the user data object
+    const userData = {
         uid: userId,
         email: email,
+        accountStatus: accountStatus , // Default to 'Activate' if not provided
+        passwordChange: passwordChange , // Default to 'NotYet' if not provided
         username: username,
         profileImageUrl: profileImageUrl,
-        userType: userType, // Add userType with default value "user"
+        userType: userType, // Default value for userType is 'user'
         timestamp: firebase.database.ServerValue.TIMESTAMP // Add server timestamp
-    })
-    .then(() => {
-        console.log("User details saved successfully to database");
-        window.location.href = "home.html"; // Redirect to home.html after saving user details to the database
-    })
-    .catch((error) => {
-        console.error("Error saving user details to database:", error);
-        alert("Error saving user details to database");
-    });
+    };
+
+    // Save the user data to the database
+    usersRef.child(userId).set(userData)
+        .then(() => {
+            console.log("User details saved successfully to database");
+            window.location.href = "home.html"; // Redirect to home.html after saving user details
+        })
+        .catch((error) => {
+            console.error("Error saving user details to database:", error);
+            alert("Error saving user details to database");
+        });
 }
+
 
 document.getElementById("registerForm").addEventListener("submit", function(e) {
     e.preventDefault();
