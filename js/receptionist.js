@@ -284,72 +284,68 @@ function confirmBooking() {
       });
 }
 
-// function confirmBooking() {
-//   const roomId = document.getElementById('modalRoomId').textContent;
-//   const roomType = document.getElementById('modalRoomType').textContent;
-//   const roomPrice = parseFloat(document.getElementById('modalRoomPrice').textContent);
-//   const name = document.getElementById('nameInput').value.trim();
-//   const checkinTime = document.getElementById('checkinTime').textContent;
-//   const checkoutDateTime = document.getElementById('checkoutDateTime').value;
-//   const durationOfStay = parseFloat(document.getElementById('durationOfStay').textContent);
-//   const totalPrice = parseFloat(document.getElementById('totalPrice').textContent);
-  
-//   // User UID
-//   const userUid = "nouser"; // Set to "nouser" as requested
+document.querySelector('.changePassword').addEventListener('click', function () {
+  Swal.fire({
+      title: 'Change Password',
+      html:
+          '<input id="current-password" type="password" class="swal2-input" placeholder="Current Password">' +
+          '<input id="new-password" type="password" class="swal2-input" placeholder="New Password">' +
+          '<input id="confirm-password" type="password" class="swal2-input" placeholder="Confirm New Password">' +
+          '<div style="display: flex; justify-content: space-between; margin-top: 10px;">' +
+          '<label><input type="checkbox" id="show-current-password"> Show Current</label>' +
+          '<label><input type="checkbox" id="show-new-password"> Show New</label>' +
+          '<label><input type="checkbox" id="show-confirm-password"> Show Confirm</label>' +
+          '</div>',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Change Password',
+      preConfirm: () => {
+          const currentPassword = document.getElementById('current-password').value;
+          const newPassword = document.getElementById('new-password').value;
+          const confirmPassword = document.getElementById('confirm-password').value;
 
-//   // Validate required fields
-//   if (!roomId || !roomType || !roomPrice || !name || !checkinTime || !checkoutDateTime || !durationOfStay || !totalPrice) {
-//       Swal.fire({
-//           icon: 'error',
-//           title: 'Oops...',
-//           text: 'Please fill in all fields before confirming the booking.'
-//       });
-//       return; // Exit the function if validation fails
-//   }
+          if (!currentPassword || !newPassword || !confirmPassword) {
+              Swal.showValidationMessage('Please enter all password fields');
+              return false;
+          }
+          if (newPassword !== confirmPassword) {
+              Swal.showValidationMessage('New passwords do not match');
+              return false;
+          }
+          return { currentPassword, newPassword };
+      }
+  }).then((result) => {
+      if (result.isConfirmed) {
+          const { currentPassword, newPassword } = result.value;
+          
+          // Re-authenticate user with current password and then update password
+          const user = firebase.auth().currentUser;
+          const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
 
-//   // Create booking data object
-//   const bookingData = {
-//       roomId: roomId,
-//       roomType: roomType,
-//       roomPrice: roomPrice,
-//       name: name,
-//       checkinTime: checkinTime,
-//       checkoutDateTime: checkoutDateTime,
-//       durationOfStay: durationOfStay,
-//       totalPrice: totalPrice,
-//       userUid: userUid
-//   };
+          user.reauthenticateWithCredential(credential).then(() => {
+              return user.updatePassword(newPassword);
+          }).then(() => {
+              Swal.fire('Password Changed', 'Your password has been updated successfully.', 'success');
+          }).catch((error) => {
+              Swal.fire('Error', error.message, 'error');
+          });
+      }
+  });
 
-//   // Save booking to Firebase with a unique key
-//   const bookingsRef = firebase.database().ref('bookings'); // Adjust the reference path as needed
-//   const newBookingRef = bookingsRef.push(); // Create a new reference with a unique key
-//   bookingData.id = newBookingRef.key; // Add the unique ID to the booking data
-
-//   newBookingRef.set(bookingData)
-//       .then(() => {
-//           // Update the room status to 'unavailable'
-//           const roomRef = firebase.database().ref('rooms/' + roomId); // Reference to the specific room
-//           return roomRef.update({ status: 'unavailable' }); // Update room status
-//       })
-//       .then(() => {
-//           Swal.fire({
-//               icon: 'success',
-//               title: 'Booking Confirmed!',
-//               text: 'The room status has been occupied!'
-//           });
-//           closeModal(); // Close the modal after booking
-//       })
-//       .catch((error) => {
-//           console.error('Error saving booking or updating room:', error);
-//           Swal.fire({
-//               icon: 'error',
-//               title: 'Error!',
-//               text: 'Failed to confirm booking. Please try again.'
-//           });
-//       });
-// }
-
-
+  // Toggle show/hide password functionality for each password input
+  document.getElementById('show-current-password').addEventListener('change', function() {
+      const currentPasswordField = document.getElementById('current-password');
+      currentPasswordField.type = this.checked ? 'text' : 'password';
+  });
+  document.getElementById('show-new-password').addEventListener('change', function() {
+      const newPasswordField = document.getElementById('new-password');
+      newPasswordField.type = this.checked ? 'text' : 'password';
+  });
+  document.getElementById('show-confirm-password').addEventListener('change', function() {
+      const confirmPasswordField = document.getElementById('confirm-password');
+      confirmPasswordField.type = this.checked ? 'text' : 'password';
+  });
+});
 
 
 firebase.auth().onAuthStateChanged(function(user) {
