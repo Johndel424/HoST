@@ -24,74 +24,75 @@ firebase.auth().signOut().then(() => {
     alert("Error logging out!");
 });
 }
-async function handleSubmit(event) {
-  event.preventDefault(); // Prevent default form submission
+// async function handleSubmit(event) {
+//   event.preventDefault(); // Prevent default form submission
 
-  const roomId = document.getElementById('room').value; // Use this as UID
-  const roomType = document.getElementById('roomType').value;
-  const price = document.getElementById('price').value;
-  const description = document.getElementById('description').value;
-  const fileInput = document.getElementById('profileImage');
-  const file = fileInput.files[0]; // Get the file
+//   const roomId = document.getElementById('room').value; // Use this as UID
+//   const roomType = document.getElementById('roomType').value;
+//   const price = document.getElementById('price').value;
+//   const description = document.getElementById('description').value;
+//   const fileInput = document.getElementById('profileImage');
+//   const file = fileInput.files[0]; // Get the file
 
-  // Check if an image file is selected
-  if (!file) {
-    Swal.fire("Error", "You need to input an image.", "error");
-    return; // Exit the function if no file is selected
-  }
+//   // Check if an image file is selected
+//   if (!file) {
+//     Swal.fire("Error", "You need to input an image.", "error");
+//     return; // Exit the function if no file is selected
+//   }
 
-  // Check if roomId already exists
-  const roomRef = database.ref('rooms/' + roomId);
-  const snapshot = await roomRef.once('value');
-  if (snapshot.exists()) {
-    Swal.fire("Error", "Room ID already exists. Please choose a different ID.", "error");
-    return;
-  }
+//   // Check if roomId already exists
+//   const roomRef = database.ref('rooms/' + roomId);
+//   const snapshot = await roomRef.once('value');
+//   if (snapshot.exists()) {
+//     Swal.fire("Error", "Room ID already exists. Please choose a different ID.", "error");
+//     return;
+//   }
 
-  // Upload image to Firebase Storage
-  const storageRef = storage.ref('images/' + roomId + '/' + file.name);
-  const uploadTask = storageRef.put(file);
+//   // Upload image to Firebase Storage
+//   const storageRef = storage.ref('images/' + roomId + '/' + file.name);
+//   const uploadTask = storageRef.put(file);
 
-  uploadTask.on('state_changed', 
-    (snapshot) => {
-      // You can add progress indication here if needed
-    }, 
-    (error) => {
-      console.error('Upload failed:', error);
-      Swal.fire("Upload Failed", "There was an error uploading the image. Please try again.", "error");
-    }, 
-    async () => {
-      // Get the download URL
-      const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+//   uploadTask.on('state_changed', 
+//     (snapshot) => {
+//       // You can add progress indication here if needed
+//     }, 
+//     (error) => {
+//       console.error('Upload failed:', error);
+//       Swal.fire("Upload Failed", "There was an error uploading the image. Please try again.", "error");
+//     }, 
+//     async () => {
+//       // Get the download URL
+//       const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
 
-      // Save data to Realtime Database
-      const roomData = {
-        roomId,
-        roomType,
-        price,
-        description,
-        imageUrl: downloadURL,
-        status: "available" // Add default status as "available"
-      };
+//       // Save data to Realtime Database
+//       const roomData = {
+//         roomId,
+//         roomType,
+//         price,
+//         description,
+//         imageUrl: downloadURL,
+//         status: "available" // Add default status as "available"
+//       };
 
-      roomRef.set(roomData)
-        .then(() => {
-          accountContainer.style.display = 'none';
-          Swal.fire("Success", "Room created successfully!", "success");
-          document.getElementById('createAccountForm').reset(); // Reset form after submission
-        })
-        .catch((error) => {
-          console.error('Error saving data:', error);
-          Swal.fire("Error", "There was an error saving the room data. Please try again.", "error");
-        });
-    }
-  );
-}
+//       roomRef.set(roomData)
+//         .then(() => {
+//           accountContainer.style.display = 'none';
+//           Swal.fire("Success", "Room created successfully!", "success");
+//           document.getElementById('createAccountForm').reset(); // Reset form after submission
+//         })
+//         .catch((error) => {
+//           console.error('Error saving data:', error);
+//           Swal.fire("Error", "There was an error saving the room data. Please try again.", "error");
+//         });
+//     }
+//   );
+// }
 
 
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById('createAccountForm').addEventListener('submit', handleSubmit);
 });
+
 
 
 //display items
@@ -106,50 +107,105 @@ function displayItems(snapshot) {
       var item = childSnapshot.val();
 
       if (item.status === "available") {
-          var itemHtml = `
+        // Check if there is a promo percentage and calculate total price
+        let displayPrice = item.price;
+        let promoMessage = ""; // Initialize promo message
+    
+        if (item.promoPercentage && item.promoPercentage > 0) {
+            const discountAmount = (item.price * item.promoPercentage) / 100;
+            displayPrice = item.price - discountAmount; // Apply promo discount to price
+            promoMessage = `<p style="color: green; font-size: 12px;">Promo: ${item.promoPercentage}% OFF!</p>`; // Promo message
+        } else {
+            promoMessage = `<p style="color: grey; font-size: 12px;">No promo available</p>`; // No promo message
+        }
+    
+        var itemHtml = `
             <div style="display: display; justify-content: space-between; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px;">
                 <div class="mainImg" style="display: flex; flex-direction: column;">
                     <div style="margin-bottom: 5px;">
                         <img src="${item.imageUrl}">
                     </div>
-                    <div >
-                        <p style="margin: 2px; font-size: 10px;  color: grey;">Room #</p>
+                    <div>
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Room #</p>
                         <p style="margin: 2px; font-size: 15px; font-weight: bold; color: #ef53a3;">ROOM${item.roomId}</p>
-                        <p style="margin: 2px; font-size: 10px;  color: grey;">Price</p>
-                        <p style="margin: 2px; font-size: 15px;  color: black;">₱${item.price}</p>
-                         <p style="margin: 2px; font-size: 10px;  color: grey;">Room Type</p>
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Price</p>
+                        <p style="margin: 2px; font-size: 15px; color: black;">₱${displayPrice.toFixed(2)}</p> <!-- Show discounted price -->
+                        ${promoMessage} <!-- Promo message added here -->
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Room Type</p>
                         <p style="margin: 2px; color: black; font-size: 15px; text-transform: uppercase;">${item.roomType}</p>
-                         <p style="margin: 2px; font-size: 10px;  color: grey;">Description</p>
-                        <p style="margin: 2px; color: black; font-size:15px; min-height: 150px;">${item.description}</p>
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Description</p>
+                        <p style="margin: 2px; color: black; font-size: 15px; min-height: 150px;">${item.description}</p>
                     </div>
                 </div>
-                <button onclick="openModal('${item.roomId}', '${item.roomType}', ${item.price}, '${item.description.replace(/'/g, "\\'")}')" style="background-color: #ef53a3; margin-top: 10px; border: none; padding: 5px 10px; width: 100%; cursor: pointer;">
+                <button onclick="openModal('${item.roomId}', '${item.roomType}', ${item.totalPrice}, '${item.description.replace(/'/g, "\\'")}')" style="background-color: #ef53a3; margin-top: 10px; border: none; padding: 5px 10px; width: 100%; cursor: pointer;">
                     Book Now
                 </button>
-
             </div>
-
-          `;
-          itemsContainer.innerHTML += itemHtml;
-      }
+        `;
+        itemsContainer.innerHTML += itemHtml;
+    }
+    
   });
 }
 itemsRef.on('value', function(snapshot) {
   displayItems(snapshot);
 });
 
+// // Function to open the modal and display room details
+// function openModal(roomId, roomType, roomPrice, description) {
+//   document.getElementById('modalRoomId').textContent = roomId;
+//   document.getElementById('modalRoomType').textContent = roomType;
+//   document.getElementById('modalRoomPrice').textContent = roomPrice.toFixed(2);
+//   document.getElementById('modalRoomDescription').textContent = description;
+//    // Set the current date and time as check-in time
+//    const now = new Date();
+//    document.getElementById('checkinTime').textContent = now.toLocaleString(); // Format: MM/DD/YYYY, HH:MM:SS AM/PM
+//   document.getElementById('totalPrice').textContent = '0';
+//   document.getElementById('checkoutDateTime').value = '';
+//   document.getElementById('bookingModal').style.display = 'block';
+// }
 // Function to open the modal and display room details
 function openModal(roomId, roomType, roomPrice, description) {
   document.getElementById('modalRoomId').textContent = roomId;
   document.getElementById('modalRoomType').textContent = roomType;
   document.getElementById('modalRoomPrice').textContent = roomPrice.toFixed(2);
   document.getElementById('modalRoomDescription').textContent = description;
-   // Set the current date and time as check-in time
-   const now = new Date();
-   document.getElementById('checkinTime').textContent = now.toLocaleString(); // Format: MM/DD/YYYY, HH:MM:SS AM/PM
+  
+  // Set the current date and time as check-in time
+  const now = new Date();
+  document.getElementById('checkinTime').textContent = now.toLocaleString(); // Format: MM/DD/YYYY, HH:MM:SS AM/PM
+  
   document.getElementById('totalPrice').textContent = '0';
   document.getElementById('checkoutDateTime').value = '';
+  
+  // Show the modal
   document.getElementById('bookingModal').style.display = 'block';
+
+  // Add an event listener to the checkout date input
+  const checkoutInput = document.getElementById('checkoutDateTime');
+  checkoutInput.addEventListener('input', function() {
+    validateCheckoutDateTime(now, checkoutInput);
+  });
+}
+
+// Function to validate checkout date and time
+function validateCheckoutDateTime(currentDate, checkoutInput) {
+  const selectedDate = new Date(checkoutInput.value);
+  
+  // Check if the selected date and time is in the past
+  if (selectedDate < currentDate) {
+    // Disable input and change its color to gray if date is in the past
+    checkoutInput.disabled = true;
+    checkoutInput.style.color = 'gray';
+    checkoutInput.style.backgroundColor = '#e0e0e0';
+    checkoutInput.title = "Selected date and time are in the past. Please choose a future date and time.";
+  } else {
+    // Enable input if date is in the future and reset styling
+    checkoutInput.disabled = false;
+    checkoutInput.style.color = '';
+    checkoutInput.style.backgroundColor = '';
+    checkoutInput.title = '';
+  }
 }
 
 // Function to close the modal
@@ -157,50 +213,120 @@ function closeModal() {
   document.getElementById('bookingModal').style.display = 'none';
 }
 
-function calculateTotal() {
-  // Get the room price from the modal
-  const roomPrice = parseFloat(document.getElementById('modalRoomPrice').textContent);
+// function calculateTotal() {
+//   // Get the room price from the modal
+//   const roomPrice = parseFloat(document.getElementById('modalRoomPrice').textContent);
 
-  // Get the current check-in time (assuming it's now)
-  const checkinDateTime = new Date(); // Assuming check-in is now
+//   // Get the current check-in time (assuming it's now)
+//   const checkinDateTime = new Date(); // Assuming check-in is now
+//   const checkoutDateTimeInput = document.getElementById('checkoutDateTime').value;
+
+//   // Check if the user has entered a checkout date
+//   if (!checkoutDateTimeInput) {
+//       document.getElementById('totalPrice').textContent = "0.00"; // Reset total price if no checkout date is set
+//       document.getElementById('durationOfStay').textContent = "0"; // Reset duration if no checkout date is set
+//       return;
+//   }
+
+//   const checkoutDateTime = new Date(checkoutDateTimeInput);
+
+//   // Validate the check-out date and time
+//   if (isNaN(checkoutDateTime.getTime())) {
+//       alert('Please select a valid check-out date and time.');
+//       return;
+//   }
+
+//   // Check if checkout time is in the past
+//   if (checkoutDateTime <= checkinDateTime) {
+//       alert('Check-out time must be later than the current time.');
+//       document.getElementById('totalPrice').textContent = "0.00"; // Reset total price if invalid
+//       document.getElementById('durationOfStay').textContent = "0"; // Reset duration if invalid
+//       return;
+//   }
+
+//   // Calculate the duration in hours
+//   const durationInHours = Math.abs(checkoutDateTime - checkinDateTime) / (1000 * 60 * 60);
+
+//   // Update the duration of stay in the modal
+//   document.getElementById('durationOfStay').textContent = Math.ceil(durationInHours); // Round up the hours
+
+//   // Calculate total price based on hours and room price
+//   const totalPrice = roomPrice * Math.ceil(durationInHours);
+
+//   // Update the total price in the modal
+//   document.getElementById('totalPrice').textContent = totalPrice.toFixed(2); // Display total price with 2 decimal places
+// }
+function setMinCheckoutDate() {
+  // Set the minimum date and time to the current date and time
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  
+  // Format for min attribute
+  const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+  document.getElementById('checkoutDateTime').setAttribute('min', minDateTime);
+}
+
+function validateCheckoutDateTime() {
+  const checkinDateTime = new Date(); // Assume check-in is now
+  const checkoutDateTimeInput = document.getElementById('checkoutDateTime').value;
+  
+  // Check if the checkout date is selected and valid
+  if (checkoutDateTimeInput) {
+      const checkoutDateTime = new Date(checkoutDateTimeInput);
+      const durationInHours = (checkoutDateTime - checkinDateTime) / (1000 * 60 * 60);
+
+      if (checkoutDateTime < checkinDateTime) {
+          alert("Check-out time must be later than the current time.");
+          document.getElementById('checkoutDateTime').value = ""; // Clear invalid date
+      } else if (durationInHours < 1) {
+          alert("Minimum stay duration is 1 hour.");
+          document.getElementById('checkoutDateTime').value = ""; // Clear invalid date
+      } else {
+          calculateTotal(); // Proceed to calculate total if date is valid
+      }
+  }
+}
+
+function calculateTotal() {
+  const roomPrice = parseFloat(document.getElementById('modalRoomPrice').textContent);
+  const checkinDateTime = new Date();
   const checkoutDateTimeInput = document.getElementById('checkoutDateTime').value;
 
-  // Check if the user has entered a checkout date
   if (!checkoutDateTimeInput) {
-      document.getElementById('totalPrice').textContent = "0.00"; // Reset total price if no checkout date is set
-      document.getElementById('durationOfStay').textContent = "0"; // Reset duration if no checkout date is set
+      document.getElementById('totalPrice').textContent = "0.00";
+      document.getElementById('durationOfStay').textContent = "0";
       return;
   }
 
   const checkoutDateTime = new Date(checkoutDateTimeInput);
-
-  // Validate the check-out date and time
-  if (isNaN(checkoutDateTime.getTime())) {
+  if (isNaN(checkoutDateTime.getTime()) || checkoutDateTime <= checkinDateTime) {
       alert('Please select a valid check-out date and time.');
+      document.getElementById('totalPrice').textContent = "0.00";
+      document.getElementById('durationOfStay').textContent = "0";
       return;
   }
 
-  // Check if checkout time is in the past
-  if (checkoutDateTime <= checkinDateTime) {
-      alert('Check-out time must be later than the current time.');
-      document.getElementById('totalPrice').textContent = "0.00"; // Reset total price if invalid
-      document.getElementById('durationOfStay').textContent = "0"; // Reset duration if invalid
+  const durationInHours = Math.ceil((checkoutDateTime - checkinDateTime) / (1000 * 60 * 60));
+
+  // Check for minimum stay duration of 1 hour
+  if (durationInHours < 1) {
+      alert("Minimum stay duration is 1 hour.");
+      document.getElementById('totalPrice').textContent = "0.00";
+      document.getElementById('durationOfStay').textContent = "0";
       return;
   }
 
-  // Calculate the duration in hours
-  const durationInHours = Math.abs(checkoutDateTime - checkinDateTime) / (1000 * 60 * 60);
-
-  // Update the duration of stay in the modal
-  document.getElementById('durationOfStay').textContent = Math.ceil(durationInHours); // Round up the hours
-
-  // Calculate total price based on hours and room price
-  const totalPrice = roomPrice * Math.ceil(durationInHours);
-
-  // Update the total price in the modal
-  document.getElementById('totalPrice').textContent = totalPrice.toFixed(2); // Display total price with 2 decimal places
+  document.getElementById('durationOfStay').textContent = durationInHours;
+  const totalPrice = roomPrice * durationInHours;
+  document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
 }
 
+// Set the min attribute for checkout datetime on page load
+window.onload = setMinCheckoutDate;
 
 
 function confirmBooking() {
@@ -288,13 +414,11 @@ document.querySelector('.changePassword').addEventListener('click', function () 
   Swal.fire({
       title: 'Change Password',
       html:
-          '<input id="current-password" type="password" class="swal2-input" placeholder="Current Password">' +
-          '<input id="new-password" type="password" class="swal2-input" placeholder="New Password">' +
-          '<input id="confirm-password" type="password" class="swal2-input" placeholder="Confirm New Password">' +
+          '<input id="current-password" type="password" class="swal2-input" placeholder="Current Password" style="height: 30px; font-size: 14px;">' +
+          '<input id="new-password" type="password" class="swal2-input" placeholder="New Password" style="height: 30px; font-size: 14px;">' +
+          '<input id="confirm-password" type="password" class="swal2-input" placeholder="Confirm New Password" style="height: 30px; font-size: 14px;">' +
           '<div style="display: flex; justify-content: space-between; margin-top: 10px;">' +
-          '<label><input type="checkbox" id="show-current-password"> Show Current</label>' +
-          '<label><input type="checkbox" id="show-new-password"> Show New</label>' +
-          '<label><input type="checkbox" id="show-confirm-password"> Show Confirm</label>' +
+          '<label><input type="checkbox" id="show-passwords"> Show All Passwords</label>' +
           '</div>',
       focusConfirm: false,
       showCancelButton: true,
@@ -313,6 +437,12 @@ document.querySelector('.changePassword').addEventListener('click', function () 
               return false;
           }
           return { currentPassword, newPassword };
+      },
+      willOpen: () => {
+          // Prevent scrolling and set max height to control the modal size
+          const swalContent = document.querySelector('.swal2-html-container');
+          swalContent.style.overflowY = 'hidden';
+          swalContent.style.maxHeight = '400px'; // Set a maximum height for the modal content
       }
   }).then((result) => {
       if (result.isConfirmed) {
@@ -332,18 +462,13 @@ document.querySelector('.changePassword').addEventListener('click', function () 
       }
   });
 
-  // Toggle show/hide password functionality for each password input
-  document.getElementById('show-current-password').addEventListener('change', function() {
-      const currentPasswordField = document.getElementById('current-password');
-      currentPasswordField.type = this.checked ? 'text' : 'password';
-  });
-  document.getElementById('show-new-password').addEventListener('change', function() {
-      const newPasswordField = document.getElementById('new-password');
-      newPasswordField.type = this.checked ? 'text' : 'password';
-  });
-  document.getElementById('show-confirm-password').addEventListener('change', function() {
-      const confirmPasswordField = document.getElementById('confirm-password');
-      confirmPasswordField.type = this.checked ? 'text' : 'password';
+  // Toggle show/hide password functionality for all password fields
+  document.getElementById('show-passwords').addEventListener('change', function() {
+      const passwordFields = ['current-password', 'new-password', 'confirm-password'];
+      passwordFields.forEach(fieldId => {
+          const passwordField = document.getElementById(fieldId);
+          passwordField.type = this.checked ? 'text' : 'password';
+      });
   });
 });
 
@@ -407,7 +532,6 @@ menuBar.addEventListener('click', function () {
 	sidebar.classList.toggle('hide');
 })
 sidebar.classList.toggle('hide');
-
 
 const searchButton = document.querySelector('#content nav form .form-input button');
 const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');

@@ -109,29 +109,40 @@ document.addEventListener("DOMContentLoaded", function() {
         var item = childSnapshot.val();
   
         if (item.status === "available") {
+            // Check if there is a promo percentage and calculate total price
+            let displayPrice = item.price;
+            let promoMessage = ""; // Initialize promo message
+        
+            if (item.promoPercentage && item.promoPercentage > 0) {
+                const discountAmount = (item.price * item.promoPercentage) / 100;
+                displayPrice = item.price - discountAmount; // Apply promo discount to price
+                promoMessage = `<p style="color: green; font-size: 12px;">Promo: ${item.promoPercentage}% OFF!</p>`; // Promo message
+            } else {
+                promoMessage = `<p style="color: grey; font-size: 12px;">No promo available</p>`; // No promo message
+            }
+        
             var itemHtml = `
-              <div style="display: display; justify-content: space-between; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px;">
-                  <div class="mainImg" style="display: flex; flex-direction: column;">
-                      <div style="margin-bottom: 5px;">
-                          <img src="${item.imageUrl}">
-                      </div>
-                      <div >
-                          <p style="margin: 2px; font-size: 10px;  color: grey;">Room #</p>
-                          <p style="margin: 2px; font-size: 15px; font-weight: bold; color: #ef53a3;">ROOM${item.roomId}</p>
-                          <p style="margin: 2px; font-size: 10px;  color: grey;">Price</p>
-                          <p style="margin: 2px; font-size: 15px;  color: black;">₱${item.price}</p>
-                           <p style="margin: 2px; font-size: 10px;  color: grey;">Room Type</p>
-                          <p style="margin: 2px; color: black; font-size: 15px; text-transform: uppercase;">${item.roomType}</p>
-                           <p style="margin: 2px; font-size: 10px;  color: grey;">Description</p>
-                          <p style="margin: 2px; color: black; font-size:15px; min-height: 150px;">${item.description}</p>
-                      </div>
-                  </div>
-                  <button onclick="openModal('${item.roomId}', '${item.roomType}', ${item.price}, '${item.description.replace(/'/g, "\\'")}')" style="background-color: #ef53a3; margin-top: 10px; border: none; padding: 5px 10px; width: 100%; cursor: pointer;">
-                      Book Now
-                  </button>
-  
-              </div>
-  
+                <div style="display: display; justify-content: space-between; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px;">
+                    <div class="mainImg" style="display: flex; flex-direction: column;">
+                        <div style="margin-bottom: 5px;">
+                            <img src="${item.imageUrl}">
+                        </div>
+                        <div>
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Room #</p>
+                            <p style="margin: 2px; font-size: 15px; font-weight: bold; color: #ef53a3;">ROOM${item.roomId}</p>
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Price</p>
+                            <p style="margin: 2px; font-size: 15px; color: black;">₱${displayPrice.toFixed(2)}</p> <!-- Show discounted price -->
+                            ${promoMessage} <!-- Promo message added here -->
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Room Type</p>
+                            <p style="margin: 2px; color: black; font-size: 15px; text-transform: uppercase;">${item.roomType}</p>
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Description</p>
+                            <p style="margin: 2px; color: black; font-size: 15px; min-height: 150px;">${item.description}</p>
+                        </div>
+                    </div>
+                    <button onclick="openModal('${item.roomId}', '${item.roomType}', ${item.totalPrice}, '${item.description.replace(/'/g, "\\'")}')" style="background-color: #ef53a3; margin-top: 10px; border: none; padding: 5px 10px; width: 100%; cursor: pointer;">
+                        Book Now
+                    </button>
+                </div>
             `;
             itemsContainer.innerHTML += itemHtml;
         }
@@ -140,7 +151,58 @@ document.addEventListener("DOMContentLoaded", function() {
   itemsRef.on('value', function(snapshot) {
     displayItems(snapshot);
   });
+   //display items
+   var itemsRef2 = firebase.database().ref('rooms');
   
+   // Reference to the items container
+   var itemsContainer2 = document.getElementById('itemsContainer2');
+   function displayItems2(snapshot) {
+     itemsContainer2.innerHTML = ''; // Clear previous items
+   
+     snapshot.forEach(function(childSnapshot) {
+         var item = childSnapshot.val();
+   
+         if (item.status === "available" && item.promoPercentage != null && item.promoPercentage !== 0) {
+             // Check if there is a promo percentage and calculate total price
+             let displayPrice = item.price;
+             let promoMessage = ""; // Initialize promo message
+         
+             if (item.promoPercentage && item.promoPercentage > 0) {
+                 const discountAmount = (item.price * item.promoPercentage) / 100;
+                 displayPrice = item.price - discountAmount; // Apply promo discount to price
+                 promoMessage = `<p style="color: green; font-size: 12px;">Promo: ${item.promoPercentage}% OFF!</p>`; // Promo message
+             } else {
+                 promoMessage = `<p style="color: grey; font-size: 12px;">No promo available</p>`; // No promo message
+             }
+         
+             var itemHtml = `
+                <div onclick="openModal('${item.roomId}', '${item.roomType}', ${item.totalPrice}, '${item.description.replace(/'/g, "\\'")}')" style="display: flex; justify-content: space-between; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px; cursor: pointer;">
+                    <div class="mainImg" style="display: flex; flex-direction: column;">
+                        <div style="margin-bottom: 5px;">
+                            <img src="${item.imageUrl}">
+                        </div>
+                        <div>
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Room #</p>
+                            <p style="margin: 2px; font-size: 15px; font-weight: bold; color: #ef53a3;">ROOM${item.roomId}</p>
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Price</p>
+                            <p style="margin: 2px; font-size: 15px; color: black;">₱${displayPrice.toFixed(2)}</p> <!-- Show discounted price -->
+                            ${promoMessage} <!-- Promo message added here -->
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Room Type</p>
+                            <p style="margin: 2px; color: black; font-size: 15px; text-transform: uppercase;">${item.roomType}</p>
+                            <p style="margin: 2px; font-size: 10px; color: grey;">Description</p>
+                            <p style="margin: 2px; color: black; font-size: 15px; min-height: 150px;">${item.description}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+             itemsContainer2.innerHTML += itemHtml;
+         }
+     });
+   }
+   itemsRef2.on('value', function(snapshot) {
+     displayItems2(snapshot);
+   });
+   
   // Function to open the modal and display room details
   function openModal(roomId, roomType, roomPrice, description) {
     document.getElementById('modalRoomId').textContent = roomId;
@@ -159,7 +221,22 @@ document.addEventListener("DOMContentLoaded", function() {
   function closeModal() {
     document.getElementById('bookingModal').style.display = 'none';
   }
-  
+    // Get the current date and time in the correct format for datetime-local input
+    function setMinDateTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        // Set min attribute in the format "YYYY-MM-DDTHH:MM"
+        const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        document.getElementById("checkoutDateTime").min = minDateTime;
+    }
+
+    // Call the function on page load
+    setMinDateTime();
   function calculateTotal() {
     // Get the room price from the modal
     const roomPrice = parseFloat(document.getElementById('modalRoomPrice').textContent);
@@ -304,13 +381,11 @@ document.querySelector('.changePassword').addEventListener('click', function () 
     Swal.fire({
         title: 'Change Password',
         html:
-            '<input id="current-password" type="password" class="swal2-input" placeholder="Current Password">' +
-            '<input id="new-password" type="password" class="swal2-input" placeholder="New Password">' +
-            '<input id="confirm-password" type="password" class="swal2-input" placeholder="Confirm New Password">' +
+            '<input id="current-password" type="password" class="swal2-input" placeholder="Current Password" style="height: 30px; font-size: 14px;">' +
+            '<input id="new-password" type="password" class="swal2-input" placeholder="New Password" style="height: 30px; font-size: 14px;">' +
+            '<input id="confirm-password" type="password" class="swal2-input" placeholder="Confirm New Password" style="height: 30px; font-size: 14px;">' +
             '<div style="display: flex; justify-content: space-between; margin-top: 10px;">' +
-            '<label><input type="checkbox" id="show-current-password"> Show Current</label>' +
-            '<label><input type="checkbox" id="show-new-password"> Show New</label>' +
-            '<label><input type="checkbox" id="show-confirm-password"> Show Confirm</label>' +
+            '<label><input type="checkbox" id="show-passwords"> Show All Passwords</label>' +
             '</div>',
         focusConfirm: false,
         showCancelButton: true,
@@ -329,6 +404,12 @@ document.querySelector('.changePassword').addEventListener('click', function () 
                 return false;
             }
             return { currentPassword, newPassword };
+        },
+        willOpen: () => {
+            // Prevent scrolling and set max height to control the modal size
+            const swalContent = document.querySelector('.swal2-html-container');
+            swalContent.style.overflowY = 'hidden';
+            swalContent.style.maxHeight = '400px'; // Set a maximum height for the modal content
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -347,21 +428,17 @@ document.querySelector('.changePassword').addEventListener('click', function () 
             });
         }
     });
-  
-    // Toggle show/hide password functionality for each password input
-    document.getElementById('show-current-password').addEventListener('change', function() {
-        const currentPasswordField = document.getElementById('current-password');
-        currentPasswordField.type = this.checked ? 'text' : 'password';
+
+    // Toggle show/hide password functionality for all password fields
+    document.getElementById('show-passwords').addEventListener('change', function() {
+        const passwordFields = ['current-password', 'new-password', 'confirm-password'];
+        passwordFields.forEach(fieldId => {
+            const passwordField = document.getElementById(fieldId);
+            passwordField.type = this.checked ? 'text' : 'password';
+        });
     });
-    document.getElementById('show-new-password').addEventListener('change', function() {
-        const newPasswordField = document.getElementById('new-password');
-        newPasswordField.type = this.checked ? 'text' : 'password';
-    });
-    document.getElementById('show-confirm-password').addEventListener('change', function() {
-        const confirmPasswordField = document.getElementById('confirm-password');
-        confirmPasswordField.type = this.checked ? 'text' : 'password';
-    });
-  });
+});
+
 
 
 

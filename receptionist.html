@@ -42,51 +42,56 @@
 					<span class="text">Rooms</span>
 				</a>
 			</li>
-			<li>
-				<a href="receptionistAccount.html">
-                    <i class='bx bx-user' style="font-size: 25px;"></i>
-					<span class="text">Accounts</span>
-				</a>
-			</li>
-			<li>
-				<a href="receptionistInventory.html">
-                    <i class='bx bx-box' style="font-size: 25px;"></i>
-					<span class="text">Inventory</span>
-				</a>
-			</li>
-			<li>
-				<a href="receptionistMessageList.html">
-                    <i class='bx bx-message' style="font-size: 25px;"></i>
-					<span class="text">Message</span>
-				</a>
-			</li>
-			<li>
-                <a href="receptionistPending.html" >
-                    <i class='bx bx-hourglass' style="font-size: 25px;"></i>
-                    <span class="text">Pending</span>
-                </a>
-            </li>
-            <li>
-                <a href="receptionistNotification.html" >
-                    <i class='bx bx-bell' style="font-size: 25px;"></i>
-                    <span class="text">Notification</span>
-                </a>
-            </li>
 		</ul>
-		<ul class="side-menu">
-			<li>
-				<a  class="changePassword">
-                    <i class='bx bx-lock' style="font-size: 25px;"></i>
-					<span class="text">Change Password</span>
-				</a>
-			</li>
-			<li>
-				<a onclick="checkChangesBeforeLogout()" class="logout">
-                    <i class='bx bx-exit' style="font-size: 25px;"></i>
-					<span class="text">Logout</span>
-				</a>
-			</li>
+		
+	</section>
+	<!-- SIDEBAR -->
+
+
+	<!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu' style="font-size: 20px;"></i>
 			
+			<form id="searchForm">
+				
+			</form>
+			<a class="profile">
+				<img src="img/people.png" id="userProfileImage" onclick="toggleDropdown()">
+			</a>
+			
+			
+			<script>
+				// Toggle dropdown menu display
+				function toggleDropdown() {
+					document.querySelector('.yey').classList.toggle('active');
+				}
+			</script>
+		</nav>
+		<!-- NAVBAR -->
+		<div class="yey">
+			<!-- Dropdown Menu -->
+			<div class="dropdown-menu">
+				<li>
+					<a >
+						<i class='bx bx-user' style="font-size: 25px;"></i>
+						<span id="usernameParagraph" class="text">Change Password</span>
+					</a>
+				</li>
+				<li>
+					<a  class="changePassword">
+						<i class='bx bx-lock' style="font-size: 25px;"></i>
+						<span class="text">Change Password</span>
+					</a>
+				</li>
+				<li>
+					<a onclick="checkChangesBeforeLogout()" class="logout">
+						<i class='bx bx-exit' style="font-size: 25px;"></i>
+						<span class="text">Logout</span>
+					</a>
+				</li>
+			</div>
 			<script>
 				function checkChangesBeforeLogout() {
 					Swal.fire({
@@ -105,31 +110,7 @@
 					});
 				}
 			</script>
-			
-		</ul>
-	</section>
-	<!-- SIDEBAR -->
-
-
-	<!-- CONTENT -->
-	<section id="content">
-		<!-- NAVBAR -->
-		<nav>
-			<i class='bx bx-menu' style="font-size: 20px;"></i>
-			<a href="javascript:void(0);" id="toggleButton">
-				<i class='bx bx-user-plus' style="font-size: 25px;"></i>
-			</a>
-			<form id="searchForm">
-				
-			</form>
-			<a href="#" class="notification">
-                <p id="usernameParagraph" style="font-family: Arial; font-size: 15px;">Name here</p>
-            </a>
-			<a href="#" class="profile">
-				<img src="img/people.png" id="userProfileImage">
-			</a>
-		</nav>
-		<!-- NAVBAR -->
+		</div>
  
 		<!-- MAIN -->
 		<main>
@@ -206,7 +187,6 @@
 					background-color: #f0f0f0;" id="pageSpinner" onchange="redirectToPage()">
 						<option value="">Available Rooms</option>
 						<option value="receptionistUnavailable.html">Occupied Rooms</option>
-						<option value="receptionistManage.html">Manage Rooms</option>
 					</select>
 			</div>
 			<script>

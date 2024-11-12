@@ -48,7 +48,46 @@
 	padding: 0;
 	box-sizing: border-box;
 }
+/* Floating dropdown menu */
+.dropdown-menu {
+	display: none;
+	position: fixed; /* Fixed to viewport */
+	width: 250px;
+	background-color: #ffffff;
+	right: 0; /* Align to the right */
+	margin-right: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	padding: 10px;
+	z-index: 1000; /* Ensures it's on top */
+}
+/* Yey container styling */
+.yey {
+	width: 300px;
+	
+	position: relative; /* For dropdown positioning */
+}
+.dropdown-menu a {
+	display: flex;
+	align-items: center;
+	padding: 8px;
+	text-decoration: none;
+	color: #333;
+	border-radius: 4px;
+}
 
+.dropdown-menu a:hover {
+	background-color: #f0f2f5;
+}
+
+.dropdown-menu a span {
+	margin-left: 10px;
+}
+
+/* Show dropdown on click */
+.yey.active .dropdown-menu {
+	display: block;
+}
 a {
 	text-decoration: none;
 }

@@ -201,44 +201,15 @@ function updateInventoryAndRoomStatus(roomId, bookingId, selectedItems) {
     });
 }
 
-// function updateInventoryAndRoomStatus(roomId, bookingId, selectedItems) {
-//     const inventoryRef = firebase.database().ref("inventory");
-//     const roomRef = firebase.database().ref("rooms/" + roomId);
-//     const bookingsRef = firebase.database().ref("bookings/" + bookingId);
-
-//     // Batch update for inventory
-//     const updates = {};
-//     for (const itemId in selectedItems) {
-//         const quantityToDeduct = selectedItems[itemId];
-//         updates[`inventory/${itemId}/quantity`] = firebase.database.ServerValue.increment(-quantityToDeduct);
-//     }
-
-//     // Update inventory, room status, and booking status
-//     firebase.database().ref().update(updates).then(() => {
-//         return roomRef.update({ status: "available" });
-//     }).then(() => {
-//         // Update booking status and collector name
-//         return bookingsRef.update({
-//             status: "clean",
-//             collectorName: "done"
-//         });
-//     }).then(() => {
-//         Swal.fire("Room Marked Clean", "Inventory, room status, and booking updated successfully", "success");
-//     }).catch(error => {
-//         Swal.fire("Error", "Failed to update inventory, room status, or booking", "error");
-//     });
-// }
 document.querySelector('.changePassword').addEventListener('click', function () {
     Swal.fire({
         title: 'Change Password',
         html:
-            '<input id="current-password" type="password" class="swal2-input" placeholder="Current Password">' +
-            '<input id="new-password" type="password" class="swal2-input" placeholder="New Password">' +
-            '<input id="confirm-password" type="password" class="swal2-input" placeholder="Confirm New Password">' +
+            '<input id="current-password" type="password" class="swal2-input" placeholder="Current Password" style="height: 30px; font-size: 14px;">' +
+            '<input id="new-password" type="password" class="swal2-input" placeholder="New Password" style="height: 30px; font-size: 14px;">' +
+            '<input id="confirm-password" type="password" class="swal2-input" placeholder="Confirm New Password" style="height: 30px; font-size: 14px;">' +
             '<div style="display: flex; justify-content: space-between; margin-top: 10px;">' +
-            '<label><input type="checkbox" id="show-current-password"> Show Current</label>' +
-            '<label><input type="checkbox" id="show-new-password"> Show New</label>' +
-            '<label><input type="checkbox" id="show-confirm-password"> Show Confirm</label>' +
+            '<label><input type="checkbox" id="show-passwords"> Show All Passwords</label>' +
             '</div>',
         focusConfirm: false,
         showCancelButton: true,
@@ -257,6 +228,12 @@ document.querySelector('.changePassword').addEventListener('click', function () 
                 return false;
             }
             return { currentPassword, newPassword };
+        },
+        willOpen: () => {
+            // Prevent scrolling and set max height to control the modal size
+            const swalContent = document.querySelector('.swal2-html-container');
+            swalContent.style.overflowY = 'hidden';
+            swalContent.style.maxHeight = '400px'; // Set a maximum height for the modal content
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -275,21 +252,17 @@ document.querySelector('.changePassword').addEventListener('click', function () 
             });
         }
     });
-  
-    // Toggle show/hide password functionality for each password input
-    document.getElementById('show-current-password').addEventListener('change', function() {
-        const currentPasswordField = document.getElementById('current-password');
-        currentPasswordField.type = this.checked ? 'text' : 'password';
+
+    // Toggle show/hide password functionality for all password fields
+    document.getElementById('show-passwords').addEventListener('change', function() {
+        const passwordFields = ['current-password', 'new-password', 'confirm-password'];
+        passwordFields.forEach(fieldId => {
+            const passwordField = document.getElementById(fieldId);
+            passwordField.type = this.checked ? 'text' : 'password';
+        });
     });
-    document.getElementById('show-new-password').addEventListener('change', function() {
-        const newPasswordField = document.getElementById('new-password');
-        newPasswordField.type = this.checked ? 'text' : 'password';
-    });
-    document.getElementById('show-confirm-password').addEventListener('change', function() {
-        const confirmPasswordField = document.getElementById('confirm-password');
-        confirmPasswordField.type = this.checked ? 'text' : 'password';
-    });
-  });
+});
+
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in, get the user ID
