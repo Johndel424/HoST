@@ -159,45 +159,54 @@ document.addEventListener("DOMContentLoaded", function() {
    function displayItems2(snapshot) {
      itemsContainer2.innerHTML = ''; // Clear previous items
    
-     snapshot.forEach(function(childSnapshot) {
-         var item = childSnapshot.val();
-   
-         if (item.status === "available" && item.promoPercentage != null && item.promoPercentage !== 0) {
-             // Check if there is a promo percentage and calculate total price
-             let displayPrice = item.price;
-             let promoMessage = ""; // Initialize promo message
-         
-             if (item.promoPercentage && item.promoPercentage > 0) {
-                 const discountAmount = (item.price * item.promoPercentage) / 100;
-                 displayPrice = item.price - discountAmount; // Apply promo discount to price
-                 promoMessage = `<p style="color: green; font-size: 12px;">Promo: ${item.promoPercentage}% OFF!</p>`; // Promo message
-             } else {
-                 promoMessage = `<p style="color: grey; font-size: 12px;">No promo available</p>`; // No promo message
-             }
-         
-             var itemHtml = `
-                <div onclick="openModal('${item.roomId}', '${item.roomType}', ${item.totalPrice}, '${item.description.replace(/'/g, "\\'")}')" style="display: flex; justify-content: space-between; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px; cursor: pointer;">
-                    <div class="mainImg" style="display: flex; flex-direction: column;">
-                        <div style="margin-bottom: 5px;">
-                            <img src="${item.imageUrl}">
-                        </div>
-                        <div>
-                            <p style="margin: 2px; font-size: 10px; color: grey;">Room #</p>
-                            <p style="margin: 2px; font-size: 15px; font-weight: bold; color: #ef53a3;">ROOM${item.roomId}</p>
-                            <p style="margin: 2px; font-size: 10px; color: grey;">Price</p>
-                            <p style="margin: 2px; font-size: 15px; color: black;">₱${displayPrice.toFixed(2)}</p> <!-- Show discounted price -->
-                            ${promoMessage} <!-- Promo message added here -->
-                            <p style="margin: 2px; font-size: 10px; color: grey;">Room Type</p>
-                            <p style="margin: 2px; color: black; font-size: 15px; text-transform: uppercase;">${item.roomType}</p>
-                            <p style="margin: 2px; font-size: 10px; color: grey;">Description</p>
-                            <p style="margin: 2px; color: black; font-size: 15px; min-height: 150px;">${item.description}</p>
-                        </div>
+     let promoFound = false; // Flag to track if any promo items are found
+
+snapshot.forEach(function(childSnapshot) {
+    var item = childSnapshot.val();
+
+    if (item.status === "available" && item.promoPercentage != null && item.promoPercentage !== 0) {
+        // Check if there is a promo percentage and calculate total price
+        let displayPrice = item.price;
+        let promoMessage = ""; // Initialize promo message
+
+        if (item.promoPercentage && item.promoPercentage > 0) {
+            const discountAmount = (item.price * item.promoPercentage) / 100;
+            displayPrice = item.price - discountAmount; // Apply promo discount to price
+            promoMessage = `<p style="color: green; font-size: 12px;">Promo: ${item.promoPercentage}% OFF!</p>`; // Promo message
+        } else {
+            promoMessage = `<p style="color: grey; font-size: 12px;">No promo available</p>`; // No promo message
+        }
+
+        var itemHtml = `
+            <div onclick="openModal('${item.roomId}', '${item.roomType}', ${item.totalPrice}, '${item.description.replace(/'/g, "\\'")}')" style="display: flex; justify-content: space-between; flex-direction: column; background-color: white; border-radius: 10px; padding: 10px; cursor: pointer;">
+                <div class="mainImg" style="display: flex; flex-direction: column;">
+                    <div style="margin-bottom: 5px;">
+                        <img src="${item.imageUrl}">
+                    </div>
+                    <div>
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Room #</p>
+                        <p style="margin: 2px; font-size: 15px; font-weight: bold; color: #ef53a3;">ROOM${item.roomId}</p>
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Price</p>
+                        <p style="margin: 2px; font-size: 15px; color: black;">₱${displayPrice.toFixed(2)}</p> <!-- Show discounted price -->
+                        ${promoMessage} <!-- Promo message added here -->
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Room Type</p>
+                        <p style="margin: 2px; color: black; font-size: 15px; text-transform: uppercase;">${item.roomType}</p>
+                        <p style="margin: 2px; font-size: 10px; color: grey;">Description</p>
+                        <p style="margin: 2px; color: black; font-size: 15px; min-height: 150px;">${item.description}</p>
                     </div>
                 </div>
-            `;
-             itemsContainer2.innerHTML += itemHtml;
-         }
-     });
+            </div>
+        `;
+        itemsContainer2.innerHTML += itemHtml;
+        promoFound = true; // Set flag to true when a promo item is found
+    }
+});
+
+// If no promo items were found, display the "No deals so far" message with inline styling
+if (!promoFound) {
+    itemsContainer2.innerHTML = "<p style='font-size: 20px; font-weight: bold; text-align: center; color: #ef53a3; padding: 20px; background-color: #f5f5f5; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 20px; width: 100%; display: flex; justify-content: center; align-items: center; height: 100px;'>No deals so far</p>";
+}
+
    }
    itemsRef2.on('value', function(snapshot) {
      displayItems2(snapshot);
