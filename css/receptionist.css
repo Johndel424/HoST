@@ -177,7 +177,7 @@ button:hover {
 	display: none;
 }
 #itemsContainer {
-	display: none;
+	display: grid;
 	margin-top: 10px;
 	border-radius: 20px;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* I-adjust depende sa iyong preference */
