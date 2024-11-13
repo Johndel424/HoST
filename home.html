@@ -45,19 +45,22 @@
 			<i class='bx bx-menu' style="font-size: 20px;"></i>
 			<i id="publishButton" class='bx bx-message' style="font-size: 20px;"></i>
 			<i id="promoShow" class='bx bx-purchase-tag' style="font-size: 20px;"></i>
-			<script>
-				// Function to show the modal
-				document.getElementById('promoShow').onclick = function() {
-					document.getElementById('itemsContainer2Container').style.display = 'grid';
-					document.getElementById('itemsContainer').style.display = 'none';
-				};
-			
-				// Function to hide the modal
-				function backPromo() {
-					document.getElementById('itemsContainer2Container').style.display = 'none';
-					document.getElementById('itemsContainer').style.display = 'grid';
-				}
-			</script>
+<script>
+    // Function to toggle the display of the modal
+    document.getElementById('promoShow').onclick = function() {
+        const itemsContainer2Container = document.getElementById('itemsContainer2Container');
+        const itemsContainer = document.getElementById('itemsContainer');
+        
+        if (itemsContainer2Container.style.display === 'none') {
+            itemsContainer2Container.style.display = 'grid';
+            itemsContainer.style.display = 'none';
+        } else {
+            itemsContainer2Container.style.display = 'none';
+            itemsContainer.style.display = 'grid';
+        }
+    };
+</script>
+
 			<form id="searchForm">
 				
 			</form>
@@ -195,9 +198,9 @@
 		<div id="itemsContainer">
 				
 		</div>
-		<div id="itemsContainer2Container">
-			<div class="promo">
-				<span class="promo-label">Promo deals</span>
+		<div id="itemsContainer2Container" style="display: none;">
+			<div class="promo" style="padding-top: 10px;">
+				<span class="promo-label" style="margin: 10px; font-size: 20px;">Promo deals</span>
 				
 				<div id="itemsContainer2">
 				</div>

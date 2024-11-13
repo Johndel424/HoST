@@ -193,6 +193,7 @@ button:hover {
 #itemsContainer2Container{
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for floating effect */
 	background-color: #fff; 
+	display: none;
 }
 
 #chatContainer {
